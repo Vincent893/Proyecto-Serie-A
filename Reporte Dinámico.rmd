@@ -1,0 +1,78 @@
+---
+title: "Análisis Estadístico del Rendimiento en la Serie A:
+Un Estudio Basado en Posesión, Goles Esperados y Resultados Reales"
+subtitle: "Evaluación de Tendencias y Correlaciones en las Últimas Cinco Temporadas"
+author: "Vicente Diaz"
+runtime: shiny 
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: flatly
+    highlight: tango
+    df_print: paged
+---
+
+ ---
+ 
+```{r, include=FALSE}
+# Carga de librerias necesarias
+library(dplyr)
+library(shiny)
+library(scales)
+library(DT)
+library(ggplot2)
+
+# Limpieza de Dataframe
+df <- read.csv("matches_serie_A.csv")
+
+# Añadir columna de diferencia de goles
+df <- df %>% 
+  mutate(goal_diff = GF - GA)
+
+# Traducir datos de la columna Venue
+df <- df %>%
+  mutate(Venue = case_when(
+    Venue == 'Away' ~ 'Visitante',
+    Venue == 'Home' ~ 'Local'
+  ))
+
+# Traducir nombres de la columnas
+df <- df %>% rename(Temporada = Season)
+df <- df %>% rename(Equipo = Team)
+
+# Modificar datos de la columna Temporada
+start20_21 <- as.Date('2020-09-19')
+end20_21 <- as.Date('2021-05-23')
+
+start21_22 <- as.Date('2021-08-21')
+end21_22 <- as.Date('2022-05-22')
+
+start22_23 <- as.Date('2022-08-13')
+end22_23 <- as.Date('2023-06-11')
+
+start23_24 <- as.Date('2023-08-19')
+end23_24 <- as.Date('2024-06-02')
+
+start24_25 <- as.Date('2024-08-17')
+end24_25 <- as.Date('2025-05-25')
+
+df <- df %>%
+  mutate(Temporada = case_when(
+    Date >= start20_21 & Date <= end20_21 ~ '2020/2021',
+    Date >= start21_22 & Date <= end21_22 ~ '2021/2022',
+    Date >= start22_23 & Date <= end22_23 ~ '2022/2023',
+    Date >= start23_24 & Date <= end23_24 ~ '2023/2024',
+    Date >= start24_25 & Date <= end24_25 ~ '2024/2025'
+  )
+           )
+
+# Añadir columna de Puntos
+df <- df %>%
+  mutate(Puntos = case_when(
+    Result == 'W' ~ 3,
+    Result == 'D' ~ 1,
+    Result == 'L' ~ 0
+  ))
+```
