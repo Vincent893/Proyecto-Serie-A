@@ -76,3 +76,59 @@ df <- df %>%
     Result == 'L' ~ 0
   ))
 ```
+
+# **Introducción**
+
+<font size="4"> El presente estudio examina el rendimiento de los equipos de la Serie A italiana durante las últimas cinco temporadas, con el objetivo de comprender cómo diversos indicadores estadísticos (como la posesión del balón, los goles esperados (xG) y la relación entre resultados esperados y reales) se asocian con el desempeño deportivo.
+
+Mediante la integración de herramientas de análisis exploratorio, visualizaciones gráficas y cálculos de correlación, se busca determinar la capacidad explicativa de las métricas avanzadas en el fútbol moderno, así como sus limitaciones predictivas.
+
+La investigación pretende aportar una base empírica al debate sobre la utilidad real de las estadísticas en un deporte marcado por la incertidumbre, la emoción y los factores contextuales.</font>
+
+------------------------------------------------------------------------
+
+## **Planteamiento del Problema**
+
+<font size="4"> El fútbol contemporáneo se encuentra cada vez más influido por la analítica y la estadística avanzada. Sin embargo, aún persiste la duda de cuánto pueden realmente explicar o predecir los datos el resultado de un partido. En particular, tres interrogantes son fundamentales para comprender la relación entre la teoría estadística y la práctica futbolística:
+
+1)  ¿Una mayor posesión del balón incrementa la probabilidad de victoria?
+
+2)  ¿Los goles esperados (xG) reflejan con precisión el rendimiento real de los equipos?
+
+3)  ¿Existe una correspondencia significativa entre los resultados esperados y los obtenidos en el marcador?
+
+Responder a estas preguntas permite evaluar el valor predictivo de las métricas futbolísticas y su aplicabilidad en la toma de decisiones tácticas y estratégicas dentro del deporte profesional.</font>
+
+------------------------------------------------------------------------
+
+## **Marco Teórico**
+
+<font size="4"> Para sustentar el análisis, se consideran los siguientes conceptos clave:
+
+-   **Posesión del balón**: Porcentaje de tiempo que un equipo controla la pelota durante un partido. Es un indicador de dominio táctico, aunque no necesariamente de efectividad ofensiva.
+
+-   **Diferencia de goles (DG**): Resta entre goles anotados y recibidos. Es un indicador global de desempeño, útil para medir la eficiencia ofensiva y defensiva.
+
+-   **Goles Esperados**: Métrica que estima la probabilidad de anotar en función de la calidad de las oportunidades generadas (posición del disparo, tipo de pase, parte del cuerpo usada, etc.).
+
+-   **Resultado Esperado**: Resta entre goles esperados a favor y esperados en contra. Mide el balance entre ocasiones generadas y concedidas, permitiendo estimar el “resultado esperado” de un partido.
+
+-   **Localía**: Condición de jugar como local o visitante.
+
+-   **Desviación y varianza**: Reflejan la dispersión de los datos y ayudan a evaluar la consistencia o aleatoriedad de las métricas en cuestión.
+
+-   **Correlación**: Técnica que evalúa la fuerza y dirección de la relación entre dos variables</font>
+
+------------------------------------------------------------------------
+
+## **Objetivo General**
+
+<font size="4"> Analizar los factores estadísticos más influyentes en los resultados de los equipos de la Serie A italiana durante las últimas cinco temporadas, evaluando la capacidad explicativa y predictiva de métricas como la posesión del balón y los goles esperados.</font>
+
+## **Objetivos Específicos**
+
+1.  <font size="4">**Evaluar la relación entre la posesión del balón y el resultado del partido**, determinando si un mayor control del juego se asocia con una mayor probabilidad de victoria.
+
+2.  **Analizar la confiabilidad de la métrica de goles esperados** al momento de estimar el rendimiento ofensivo de los equipos y su capacidad para reflejar la eficiencia real.
+
+3.  **Examinar la relación entre el resultado esperado y el resultado real**, identificando el grado de correlación y las limitaciones de las métricas estadísticas como herramientas predictivas.</font>
