@@ -247,3 +247,72 @@ datatable(
   )
 })
 ```
+
+
+------------------------------------------------------------------------
+
+
+# **¿Es la métrica de Goles Esperados confiable al momento de analizar el Rendimiento de un Equipo?**
+
+<font size="4"> La métrica de **Goles Esperados (xG)** se ha convertido en una herramienta fundamental para evaluar la eficiencia ofensiva en el fútbol moderno. A diferencia de los goles reales, el xG cuantifica la probabilidad de que cada disparo termine en gol, considerando factores como la ubicación, el tipo de remate y la presión defensiva.
+
+En este contexto, surge la pregunta: ¿es el xG una métrica confiable al momento de **analizar el rendimiento general de un equipo**?
+
+Responder a esta cuestión permite determinar si los equipos están aprovechando sus oportunidades de forma efectiva o si, por el contrario, muestran un rendimiento inferior al que sus datos de creación de ocasiones sugieren.</font>
+
+## **Visualización**
+
+<font size="4"> Para abordar este análisis, se utiliza un **gráfico de barras comparativo** que muestra la diferencia entre los **goles anotados** y los **goles esperados** por equipo.
+
+Este tipo de visualización es especialmente útil porque permite observar de forma inmediata el **grado de eficiencia o ineficiencia** de cada conjunto. Además, la división cromática entre equipos con rendimiento superior al esperado y equipos con rendimiento rendimiento inferior al esperado aporta una interpretación visual intuitiva.</font>
+
+
+```{r,  echo=FALSE}
+
+renderPlot({
+# Resumen de datos por equipo
+  resumen_xG <- df %>%
+  group_by(Equipo) %>%
+  summarise(
+    Total_xG = sum(xG, na.rm = TRUE), # Aplicamos na.rm porque xG es de las pocas columnas con valores nulos
+    Total_GF = sum(GF),
+    Diferencia = Total_GF - Total_xG
+  ) %>%
+  arrange(desc(Diferencia)) %>%
+  mutate(
+    eficiencia = ifelse(Diferencia > 0, 'eficiente', 'ineficiente'))
+
+# Gráfico de barras de diferencia
+ggplot(resumen_xG, aes(x = reorder(Equipo, Diferencia), y = Diferencia, fill = eficiencia)) +
+  geom_bar(stat = "identity",alpha = 0.8, width = 0.7) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5)+
+  coord_flip()+
+  labs(
+    title = "Evaluación de Rendimiento: Goles Reales vs Esperados",
+    subtitle = "Diferencia entre Goles Anotados y Goles Esperados por Equipo",
+    x = NULL,
+    y = "Rendimiento"
+  )+
+  scale_fill_manual(values = c('eficiente' = '#2E8B57', 'ineficiente' = '#DC143C'))+
+  theme_minimal()+
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12),  
+    axis.title = element_text(face = "bold"),
+    axis.text.y = element_text(face = "bold", size = 9),
+    axis.text.x = element_text(size = 9),
+    legend.position = "none",
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    )
+})
+```
+
+
+<font size="4"> Al analizar el gráfico, se observa que algunos equipos, como **Inter** y **Napoli**, presentan una diferencia positiva significativa, lo que refleja una alta eficacia ofensiva: logran convertir más goles de los que sus oportunidades sugerirían. En contraste, equipos como **Juventus** o **Roma** muestran valores negativos, evidenciando una tendencia a desaprovechar ocasiones claras. Este comportamiento podría explicarse por factores como la **calidad individual de los delanteros**, la **precisión en la toma de decisiones en el área rival**, o incluso la **capacidad del portero contrario** para evitar goles en situaciones de alta probabilidad.</font>
+
+## **Conclusiones**
+
+<font size="4"> En conclusión, la comparación entre **goles esperados y goles reales** demuestra que el xG es una métrica **fiable para evaluar el rendimiento y la eficiencia ofensiva**, pero no suficiente por sí sola para explicar el éxito competitivo de un equipo.
+
+Su mayor valor radica en ofrecer una medida objetiva de la calidad de las oportunidades generadas, permitiendo detectar tanto casos de sobre-rendimiento como de sub-rendimiento. Por ello, el xG debe considerarse una herramienta de diagnóstico analítico útil, más no un indicador absoluto del nivel o posición final de un equipo.</font>
