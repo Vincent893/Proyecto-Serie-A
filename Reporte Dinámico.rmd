@@ -132,3 +132,118 @@ Responder a estas preguntas permite evaluar el valor predictivo de las métricas
 2.  **Analizar la confiabilidad de la métrica de goles esperados** al momento de estimar el rendimiento ofensivo de los equipos y su capacidad para reflejar la eficiencia real.
 
 3.  **Examinar la relación entre el resultado esperado y el resultado real**, identificando el grado de correlación y las limitaciones de las métricas estadísticas como herramientas predictivas.</font>
+
+
+
+------------------------------------------------------------------------
+
+
+
+# **Tabla de Posiciones**
+
+<font size="4"> Antes de abordar las métricas avanzadas, se presenta la **tabla de posiciones consolidada de la Serie A**, correspondiente a las últimas cinco temporadas. Esta tabla constituye la **referencia central del estudio**, ya que refleja el rendimiento real de los equipos y permite contrastarlo con los indicadores estadísticos analizados posteriormente, tales como la posesión promedio y los goles esperados.
+
+La observación de esta clasificación **facilita identificar patrones** de consistencia o discrepancia entre los resultados obtenidos y las métricas de desempeño, contribuyendo directamente al objetivo general del estudio de analizar la relación entre rendimiento real y variables estadísticas avanzadas.</font>
+
+```{r, echo=F}
+
+# Filtros interactivos segun Equipo y Temporadas
+selectInput("equipo", "Selecciona un Equipo:", choices =
+              c('Todos los equipos', unique(df$Equipo)))
+selectInput("temporada", "Selecciona una Temporada:", choices =
+              c('Todas las temporadas', unique(df$Temporada)))
+
+# Tabla de posiciones
+renderDataTable({
+  if(input$temporada == "Todas las temporadas") {
+    # Calculo de Totales Historicos
+    datos_filtrados <- df %>% 
+      group_by(Equipo) %>%
+      summarise(
+        PJ = n(),
+        PG = sum(Result == 'W'),
+        PP = sum(Result == 'L'),
+        PE = sum(Result == 'D'),
+        PTS = as.integer(sum(Puntos)),
+        GF = sum(GF),
+        GC = sum(GA),
+        DG = sum(goal_diff),
+        Pos = mean(Poss),
+        .groups = 'drop'      ) %>%
+      arrange(desc(PTS)) %>%  
+      mutate(
+        Posicion = row_number(),
+        Pos =  round(Pos, 2)
+        ) %>%
+      select(Posicion, everything())
+             
+    # Aplicar filtro de equipo
+    if(input$equipo != "Todos los equipos") {
+      datos_filtrados <- datos_filtrados %>% filter(Equipo == input$equipo)
+    }
+    
+  } else {
+    # Datos por temporada especifica
+    datos_filtrados <- df %>% 
+      filter(Temporada == input$temporada) %>%
+      group_by(Equipo) %>%
+      summarise(
+        PJ = n(),
+        PG = sum(Result == 'W'),
+        PP = sum(Result == 'L'),
+        PE = sum(Result == 'D'),
+        PTS = as.integer(sum(Puntos)),
+        GF = sum(GF),
+        GC = sum(GA),
+        DG = sum(goal_diff),
+        Pos = mean(Poss),
+        .groups = 'drop'
+      ) %>%
+      arrange(desc(PTS)) %>%
+      mutate(
+        Posicion = row_number(),
+        Pos = round(Pos, 2)
+        ) %>%
+      select(Posicion, everything())
+
+    # Aplicar filtro de equipo
+    if(input$equipo != "Todos los equipos") {
+    datos_filtrados <- datos_filtrados %>% filter(Equipo == input$equipo)
+    }
+    }
+datatable(
+  datos_filtrados,
+  colnames = c('Posicion', 'Equipo', 'PJ', 'PG', 'PP', 'PE', 'PTS',  'GF', 'GC', 'DG', 'Posesión'),
+  options = list(
+    pageLength = 20,
+    dom = 't',
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().header()).css({",
+      "'background-color': '#008C45', ",
+      "'color': 'white', ",
+      "'font-weight': 'bold'",
+      "});",
+      "}"
+    )
+  ),
+  rownames = FALSE
+) %>%
+  formatRound('DG', 0) %>%
+  formatStyle(
+    columns = c('Posicion', 'Equipo', 'PJ'),
+    fontWeight = 'bold'
+  ) %>%
+  formatStyle(
+    'PTS',
+    color = styleInterval(
+      c(0, 60, 90),
+      c('black', 'black','white', 'white')
+    ),
+    backgroundColor = styleInterval(
+      c(0, 20, 40, 60, 80),
+      c('#FFCDD2', '#FFE0B2', '#FFF9C4', '#C8E6C9', '#A5D6A7', '#81C784')
+    )
+  )
+})
+```
