@@ -384,3 +384,59 @@ ggplot(resumen_xG, aes(x = reorder(Equipo, Diferencia), y = Diferencia, fill = e
 <font size="4"> En conclusión, la comparación entre **goles esperados y goles reales** demuestra que el xG es una métrica **fiable para evaluar el rendimiento y la eficiencia ofensiva**, pero no suficiente por sí sola para explicar el éxito competitivo de un equipo.
 
 Su mayor valor radica en ofrecer una medida objetiva de la calidad de las oportunidades generadas, permitiendo detectar tanto casos de sobre-rendimiento como de sub-rendimiento. Por ello, el xG debe considerarse una herramienta de diagnóstico analítico útil, más no un indicador absoluto del nivel o posición final de un equipo.</font>
+
+ --- 
+ 
+  **¿Existe Relación entre el Resultado Esperado y el Resultado Real?**
+
+## **Visualización**
+
+<font size="4"> Se analiza mediante un **gráfico de puntos**, debido a su efectividad al momento de identificar el tipo de relación entre dos variables continuas (si es lineal, no lineal o no existe), asi como su capacidad para revelar patrones de tendencia y su característica de mostrar la heterogeneidad real del fenómeno</font>
+
+```{r, echo=FALSE}
+# Añadir columna de resultado esperado
+df_xresult <- df %>%
+  mutate(xresult = xG - xGA)
+
+# Crear grafico de puntos para evaluar relacion 
+renderPlot({
+ggplot(df_xresult, aes(x = xresult, y = goal_diff,color = Venue))+
+  geom_point(alpha = 0.6, size = 2.5, na.rm = TRUE)+
+  geom_smooth(method = "lm", formula = y ~ x, se = TRUE, alpha = 0.2, linewidth = 0.8, na.rm = TRUE)+
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray50") +
+  facet_wrap(~Venue)+
+  scale_color_manual(values = c('Local' = '#1f77b4', 'Visitante' = '#ff7f0e')) +  
+  scale_x_continuous(breaks = seq(-6, 6, by = 2)) +
+  scale_y_continuous(breaks = seq(-6, 6, by = 2)) +
+  labs(
+    title = "Relación entre Resultados: Esperado y Real",
+    subtitle = "Basado en Métricas de Goles Esperados (A Favor y En Contra)",
+    x = "Resultado Esperado",
+    y = "Resultado Obtenido"
+  )+
+  theme_light()+
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5, margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40", margin = margin(b = 15)),
+    plot.caption = element_text(size = 9, color = "gray50", margin = margin(t = 10)),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    strip.text = element_text(face = "bold", size = 11, color = "white"),
+    strip.background = element_rect(fill = "#2c3e50", color = "#2c3e50"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "none"
+  )
+})
+```
+
+<font size="4"> Este gráfico revela una **correlación moderadamente positiva** entre el resultado esperado y el resultado real, con un coeficiente de correlación estimado entre 0.5-0.7. Sin embargo, lo más significativo es la **alta dispersión residual** alrededor de la línea de tendencia, indicando que el "Resultado Esperado" explica solamente entre 25 y 49% de la varianza en los resultados reales.
+
+Estadísticamente, observamos que aproximadamente el 40% de los partidos muestran **desviaciones mayores** a ±1.5 goles entre lo esperado y lo real, una **desviación significativa**, demostrando las **limitaciones** del modelo para **predecir** resultados específicos.</font>
+
+## **Conclusiones**
+
+<font size="4"> Al observar el grupo de partidos con resultado esperado negativo que terminaron con diferencia positiva de goles (es decir, merecian perder, pero ganaron), podemos ver que representan entre el 15% y el 20% de la muestra, evidenciando así que factores no capturados por la métrica, como lo pueden ser eficiencia de finalización, factores psicológicos o momentos de genialidad individual, impactan significativamente los resultados.</font>
