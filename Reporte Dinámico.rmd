@@ -79,7 +79,7 @@ df <- df %>%
 
 # **Introducción**
 
-<font size="4"> El presente estudio examina el rendimiento de los equipos de la Serie A italiana durante las últimas cinco temporadas, con el objetivo de comprender cómo diversos indicadores estadísticos (como la posesión del balón, los goles esperados (xG) y la relación entre resultados esperados y reales) se asocian con el desempeño deportivo.
+<font size="4"> El presente estudio examina el rendimiento de los equipos de la Serie A de Italia durante las últimas cinco temporadas, con el objetivo de comprender cómo diversos indicadores estadísticos (especialmente la posesión del balón, los goles esperados y la relación entre resultados esperados y reales) se asocian con el desempeño deportivo.
 
 Mediante la integración de herramientas de análisis exploratorio, visualizaciones gráficas y cálculos de correlación, se busca determinar la capacidad explicativa de las métricas avanzadas en el fútbol moderno, así como sus limitaciones predictivas.
 
@@ -93,7 +93,7 @@ La investigación pretende aportar una base empírica al debate sobre la utilida
 
 1)  ¿Una mayor posesión del balón incrementa la probabilidad de victoria?
 
-2)  ¿Los goles esperados (xG) reflejan con precisión el rendimiento real de los equipos?
+2)  ¿Los goles esperados reflejan con precisión el rendimiento real de los equipos?
 
 3)  ¿Existe una correspondencia significativa entre los resultados esperados y los obtenidos en el marcador?
 
@@ -292,12 +292,11 @@ ggplot(df_result, aes(x = Resultado, y = Poss, fill = Resultado)) +
     plot.title = element_text(face = "bold", size = 20, hjust = 0.5, margin = margin(b = 10)),
     plot.subtitle = element_text(size = 16, hjust = 0.5, color = "gray40", margin = margin(b = 15)),
     plot.caption = element_text(size = 9, color = "gray50", margin = margin(t = 10)),
-    axis.title = element_text(face = "bold", size = 12),
-    axis.text = element_text(size = 10),
-    strip.text = element_text(face = 'bold', size = 11, color = "white"),
+    axis.title = element_text(face = "bold", size = 16),
+    axis.text = element_text(size = 12),
+    strip.text = element_text(face = 'bold', size = 13, color = "white"),
     strip.background = element_rect(fill = "#2c3e50", color = "#2c3e50"),
     panel.grid.minor = element_blank(),
-    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
     panel.background = element_rect(fill = "white", color = NA),
     plot.background = element_rect(fill = "white", color = NA),
     legend.position = "none")
@@ -322,7 +321,7 @@ Basicamente, podemos concluir que la posesión **no es un factor determinante pa
 
 # **¿Es la métrica de Goles Esperados confiable al momento de analizar el Rendimiento de un Equipo?**
 
-<font size="4"> La métrica de **Goles Esperados (xG)** se ha convertido en una herramienta fundamental para evaluar la eficiencia ofensiva en el fútbol moderno. A diferencia de los goles reales, el xG cuantifica la probabilidad de que cada disparo termine en gol, considerando factores como la ubicación, el tipo de remate y la presión defensiva.
+<font size="4"> La métrica de **Goles Esperados** se ha convertido en una herramienta fundamental para evaluar la eficiencia ofensiva en el fútbol moderno. A diferencia de los goles reales, esta medida cuantifica la probabilidad de que cada disparo termine en gol, considerando factores como la ubicación, el tipo de remate y la presión defensiva.
 
 En este contexto, surge la pregunta: ¿es el xG una métrica confiable al momento de **analizar el rendimiento general de un equipo**?
 
@@ -364,9 +363,9 @@ ggplot(resumen_xG, aes(x = reorder(Equipo, Diferencia), y = Diferencia, fill = e
   scale_fill_manual(values = c('eficiente' = '#2E8B57', 'ineficiente' = '#DC143C'))+
   theme_minimal()+
   theme(
-    plot.title = element_text(face = "bold", size = 20),
-    plot.subtitle = element_text(size = 16),  
-    axis.title = element_text(face = "bold", size = 12),
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),  
+    axis.title = element_text(face = "bold", size = 16),
     axis.text.y = element_text(face = "bold", size = 12),
     axis.text.x = element_text(size = 10),
     legend.position = "none",
@@ -381,13 +380,17 @@ ggplot(resumen_xG, aes(x = reorder(Equipo, Diferencia), y = Diferencia, fill = e
 
 ## **Conclusiones**
 
-<font size="4"> En conclusión, la comparación entre **goles esperados y goles reales** demuestra que el xG es una métrica **fiable para evaluar el rendimiento y la eficiencia ofensiva**, pero no suficiente por sí sola para explicar el éxito competitivo de un equipo.
+<font size="4"> En conclusión, la comparación entre **goles esperados y goles reales** demuestra que esta medida es una métrica **fiable para evaluar el rendimiento y la eficiencia ofensiva**, pero no suficiente por sí sola para explicar el éxito competitivo de un equipo.
 
-Su mayor valor radica en ofrecer una medida objetiva de la calidad de las oportunidades generadas, permitiendo detectar tanto casos de sobre-rendimiento como de sub-rendimiento. Por ello, el xG debe considerarse una herramienta de diagnóstico analítico útil, más no un indicador absoluto del nivel o posición final de un equipo.</font>
+Su mayor valor radica en ofrecer una medida objetiva de la calidad de las oportunidades generadas, permitiendo detectar tanto casos de sobre-rendimiento como de sub-rendimiento. Por ello, esta métrica debe considerarse una herramienta de diagnóstico analítico útil, más no un indicador absoluto del nivel o posición final de un equipo.</font>
 
  --- 
  
-  **¿Existe Relación entre el Resultado Esperado y el Resultado Real?**
+#  **¿Existe Relación entre el Resultado Esperado y el Resultado Real?**
+
+<font size= "4"> Con esta pregunta, se busca determinar hasta que punto las **métricas estadísticas** logran **reflejar el desenlace** de los partidos.
+
+En otrasa palabras, se intenta medir si los equipos que, segun los datos, generan mas y mejores oportunidades son realmente los que terminan por encima en el marcador
 
 ## **Visualización**
 
@@ -417,12 +420,12 @@ ggplot(df_xresult, aes(x = xresult, y = goal_diff,color = Venue))+
   )+
   theme_light()+
   theme(
-    plot.title = element_text(face = "bold", size = 16, hjust = 0.5, margin = margin(b = 10)),
-    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40", margin = margin(b = 15)),
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5, margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 16, hjust = 0.5, color = "gray40", margin = margin(b = 15)),
     plot.caption = element_text(size = 9, color = "gray50", margin = margin(t = 10)),
-    axis.title = element_text(face = "bold", size = 12),
-    axis.text = element_text(size = 10),
-    strip.text = element_text(face = "bold", size = 11, color = "white"),
+    axis.title = element_text(face = "bold", size = 16),
+    axis.text = element_text(size = 12),
+    strip.text = element_text(face = "bold", size = 13, color = "white"),
     strip.background = element_rect(fill = "#2c3e50", color = "#2c3e50"),
     panel.grid.minor = element_blank(),
     panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
@@ -439,4 +442,26 @@ Estadísticamente, observamos que aproximadamente el 40% de los partidos muestra
 
 ## **Conclusiones**
 
-<font size="4"> Al observar el grupo de partidos con resultado esperado negativo que terminaron con diferencia positiva de goles (es decir, merecian perder, pero ganaron), podemos ver que representan entre el 15% y el 20% de la muestra, evidenciando así que factores no capturados por la métrica, como lo pueden ser eficiencia de finalización, factores psicológicos o momentos de genialidad individual, impactan significativamente los resultados.</font>
+<font size="4"> Al observar el grupo de partidos con resultado esperado negativo que terminaron con diferencia positiva de goles (es decir, merecian perder, pero ganaron), podemos ver que representan entre el 15% y el 20% de la muestra, evidenciando así que factores no capturados por la métrica, como lo pueden ser eficiencia de finalización, factores psicológicos o momentos de genialidad individual, impactan significativamente los resultados.
+
+En conclusión, El Resultado Esperado es un indicador direccional **útil pero imperfecto**, ya que explica aproximadamente la mitad de la varianza en los resultados, pero falla consistentemente en predecir resultados específicos debido a algunos factores no medibles, como los mencionados anteriormente.
+
+Esta métrica debe interpretarse como herramienta de análisis de rendimiento, mas no de predicción absoluta.</font>
+
+
+ ---
+ 
+
+# **Conclusión Final**
+
+<font size="4"> El estudio confirma que, si bien las métricas estadísticas aportan una comprensión valiosa del rendimiento futbolístico, su capacidad predictiva es limitada.
+
+-   En el caso de la **posesión del balón**, se observa una tendencia a un mayor control por parte de los equipos locales, pero sin una correlación directa con el resultado final.
+
+-   Los **goles esperados** resultan ser un indicador útil de rendimiento, pero no infalible: algunos equipos sobrepasan sus expectativas (eficientes) mientras que otros rinden por debajo de lo previsto (ineficientes).
+
+-   La relación entre **resultado esperado y real** presenta una correlación moderada (0.5–0.7), indicando que las métricas explican solo cerca de la mitad de la variabilidad observada en los resultados.
+
+El futbol es un deporte de **momentos efímeros**, de jugadas fugaces. Un deporte que, en la mayoria de casos, se **resiste a las predicciones**. A fin de cuentas, esos artistas del campo, que utilizan el balón como su pincel y la cancha como su lienzo, al llegar el momento de actuar, suelen comportarse de tal manera que resulta **imposible** de medir, estimar y, mucho menos, **predecir**.
+
+La estadística en el futbol, mas que predecir, **interpreta**: traduce el juego en números sin perder de vista su esencia imprevisible y artística</font>
