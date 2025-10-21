@@ -251,6 +251,74 @@ datatable(
 
 ------------------------------------------------------------------------
 
+# **¿Está el Resultado del Partido relacionado a la Posesión del Balon?**
+
+<font size="4"> A partir de la distribución de rendimiento observada en la tabla de posiciones, se procede a examinar si las diferencias en la posesión promedio del balón guardan relación con el éxito competitivo.
+
+Este análisis permitirá identificar si la tenencia del balón (frecuentemente asociada con el dominio del juego) se traduce efectivamente en mejores resultados en la clasificación general.</font>
+
+## **Visualización**
+
+<font size="4"> Se evalua mediante un **gráfico de caja y bigote**, junto con un **gráfico de fluctuación**. El gráfico de caja y bigote nos ayuda a visualizar donde se encuentra la **mediana** de los datos, asi como que tan **dispersos** estan los datos según este indicador. Mientras que el gráfico de fluctuación muestra el **total** de partidos en cada categoría, **revelando patrones** que las cajas solas no detectan, y, a su vez, identificando **casos extremos** con mayor claridad. Estas herramientas visuales se complementan entre si, haciendo que podamos observar la **historia completa** de cada partido</font>
+
+```{r, echo=F}
+
+renderPlot({
+# Traduccion de los datos de la columna de resultados
+df_result <- df  %>%
+  mutate(Result = case_when(
+    Result == 'W' ~ 'Victoria',
+    Result == 'L' ~ 'Derrota',
+    Result == 'D' ~ 'Empate',
+  ))
+df_result <- df_result %>% rename(Resultado = Result)
+
+# Creacion de grafico de caja y bigote
+ggplot(df_result, aes(x = Resultado, y = Poss, fill = Resultado)) +
+  geom_boxplot(alpha = 0.5, outlier.shape = 21, outlier.size = 2.5) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1, color = "steelblue4") +
+  geom_hline(yintercept = 50, linetype = "dashed", color = "gray40", alpha = 0.7) +
+  facet_wrap(~Venue)+
+  scale_fill_manual(values = c("Victoria" = "#2E8B57", "Empate" = "#1f77b4", "Derrota" = "#DC143C"))+
+  labs(
+    title = "Relación entre Posesión del Balón y Resultados",
+    subtitle = "Distribución de Posesión del Balón segun Resultado y Localia",
+    x = "Resultado",
+    y = "Posesión (%)",
+    caption = "Línea punteada: 50% de posesión\n• Puntos azules: Partidos individuales"
+  ) +
+  theme_light()+
+  theme(
+    plot.title = element_text(face = "bold", size = 20, hjust = 0.5, margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 16, hjust = 0.5, color = "gray40", margin = margin(b = 15)),
+    plot.caption = element_text(size = 9, color = "gray50", margin = margin(t = 10)),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    strip.text = element_text(face = 'bold', size = 11, color = "white"),
+    strip.background = element_rect(fill = "#2c3e50", color = "#2c3e50"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    legend.position = "none")
+})
+```
+
+<font size="4"> **En vista genera**l, podemos observar que la mayoria de partidos suelen terminar con porcentajes de posesion cercanos al 50%, independientemente del resultado del juego
+
+Los equipos **locales** presentan medianas de posesion mas altas en general, lo que quiere decir que tienden a **controlar y dominar** mas el balon.
+
+Los equipos **visitantes** suelen terminar con **menor posesion**, aunque son mas **precisos y eficaces** a la hora de transicionar, de **recuperar balones y contratacar**, haciendo que ganen partidos que **estadisticamente** no deberian ganar</font>
+
+## **Conclusiones**
+
+<font size="4"> El análisis demuestra que el fútbol moderno **premia** la **eficiencia** sobre la posesión, especialmente para equipos visitantes. La condición de local/visitante es un **factor crucial** que modifica completamente la relación entre posesión y resultados.
+
+Basicamente, podemos concluir que la posesión **no es un factor determinante para ganar**. Equipos con menor posesión pueden ganar partidos mediante contraataques eficientes y/o tácticas defensivas eficaces, mientras que altos porcentajes de posesión no siempre se traducen en victorias. Esto refleja la naturaleza estratégica del fútbol moderno, donde la eficacia en las transiciones defensivas y ofensivas es clave.</font>
+
+
+ ---
+
 
 # **¿Es la métrica de Goles Esperados confiable al momento de analizar el Rendimiento de un Equipo?**
 
@@ -296,11 +364,11 @@ ggplot(resumen_xG, aes(x = reorder(Equipo, Diferencia), y = Diferencia, fill = e
   scale_fill_manual(values = c('eficiente' = '#2E8B57', 'ineficiente' = '#DC143C'))+
   theme_minimal()+
   theme(
-    plot.title = element_text(face = "bold", size = 16),
-    plot.subtitle = element_text(size = 12),  
-    axis.title = element_text(face = "bold"),
-    axis.text.y = element_text(face = "bold", size = 9),
-    axis.text.x = element_text(size = 9),
+    plot.title = element_text(face = "bold", size = 20),
+    plot.subtitle = element_text(size = 16),  
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text.y = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(size = 10),
     legend.position = "none",
     panel.grid.major.y = element_blank(),
     panel.grid.minor = element_blank(),
