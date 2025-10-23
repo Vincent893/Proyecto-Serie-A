@@ -41,10 +41,6 @@ min_date = df["Date"].min()
 max_date = df["Date"].max()
 selected_dates = st.sidebar.date_input("Rango de fechas", min_value=min_date, max_value=max_date, value=(min_date, max_date))
 
-# Boton para eliminar filtros
-if st.sidebar.button("Restablecer filtros"):
-    st.experimental_rerun()
-
 # Aplicar filtros al dataframe
 def apply_filters(df: pd.DataFrame,
                   teams: list[str],
@@ -74,7 +70,7 @@ def apply_filters(df: pd.DataFrame,
 df_filtered = apply_filters(df, selected_teams, selected_seasons, selected_results, selected_venues, selected_goals, selected_dates)
 
 # Métricas clave    
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("Partidos Mostrados", f"{len(df_filtered):,}")
 with col2:
@@ -82,6 +78,9 @@ with col2:
 with col3:
     avg_goals = df_filtered["GF"].mean() if len(df_filtered) > 0 else 0
     st.metric("Promedio goles por partido", f"{avg_goals:.2f}")
+with col4:
+    total_teams = df_filtered["Team"].nunique()
+    st.metric("Equipos", f"{total_teams}")
 
 st.markdown("___")
 
@@ -159,3 +158,96 @@ summary = (df_filtered
            .sort_values("Total_Goles", ascending=False)
            .reset_index())
 st.dataframe(summary)
+
+# CSS para personalizar estetica
+st.markdown("""
+<style>
+
+    /* Sidebar styling */
+    .sidebar .sidebar-content {
+        background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+    }
+    .css-1d391kg {
+        background-color: #2c3e50;
+    }
+    /* Botones */
+    .stButton button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .stButton button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    /* Radio buttons */
+    .stRadio > div {
+        flex-direction: row;
+        align-items: center;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .stRadio > label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
+    }
+    /* Select boxes */
+    .stMultiSelect [data-baseweb="select"] {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+    }
+    .stMultiSelect [data-baseweb="select"]:hover {
+        border-color: #667eea;
+    }
+    /* Separadores */
+    .stMarkdown hr {
+        margin: 3rem 0;
+        border: none;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #667eea, transparent);
+    }
+    /* Dataframes */
+    .dataframe {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    /* Colores coordinados para gráficos */
+    .metric-card {
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8eeff 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    /* Sidebar con fondo oscuro */
+    [data-testid="stSidebar"] {
+        background-color: #2f2c79;
+    }
+        [data-testid="stSidebar"] * {
+        color: white !important;
+    }
+    /* Labels y textos específicos del sidebar */
+    [data-testid="stSidebar"] label {
+        color: white !important;
+        font-weight: 600;
+    }
+    [data-testid="stSidebar"] .stMultiSelect, 
+    [data-testid="stSidebar"] .stSlider,  {
+        color: white !important;
+    }
+        [data-testid="stSidebar"] .stDateInput input {
+        color: black !important;
+        background-color: white !important;
+    }
+    [data-testid="stSidebar"] .stDateInput label {
+        color: white !important;
+    }
+            </style>
+""", unsafe_allow_html=True)
