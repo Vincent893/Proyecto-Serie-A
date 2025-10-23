@@ -99,3 +99,21 @@ fig_bars.update_layout(
 st.plotly_chart(fig_bars, use_container_width=True)
 st.markdown("___")
 
+# Linea de tiempo del promedio de goles por mes
+st.subheader("Evolución temporal del promedio de goles por equipo")
+
+time_teams = st.multiselect("Equipos para la Serie Temporal", options=selected_teams, default=selected_teams[:3])
+
+timeline = df_filtered[df_filtered["Team"].isin(time_teams)]
+timeline["YearMonth"] = pd.to_datetime(timeline["YearMonth"], errors="coerce")
+df_time = timeline.groupby(["YearMonth", "Team"], as_index=False)["GF"].mean()
+fig_time = px.line(df_time, x="YearMonth", y="GF", color="Team", markers=True, title="Evolución del Promedio de Goles por Equipo", labels={"GF": "Goles Promedio", "YearMonth": "Mes"})
+fig_time.update_layout(
+    title_x=0.4, 
+    height=450,
+    title={'font': {'size': 26}, 'x': 0.5, 'xanchor': 'center'},
+    xaxis_title_font={'size': 18},
+    yaxis_title_font={'size': 18},
+    font=dict(size=14))
+
+st.plotly_chart(fig_time, use_container_width=True)
