@@ -48,3 +48,5 @@ Los datos utilizados en este proyecto provienen de la siguiente fuente:
 
 Puedes acceder a la aplicación interactiva desplegada en Streamlit en el siguiente enlace:
 
+- [Ver la aplicación](https://proyecto-serie-a-hxfg56cm2ccrzymvskbtem.streamlit.app/)
+
