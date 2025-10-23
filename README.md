@@ -50,7 +50,7 @@ Puedes acceder a la aplicación interactiva desplegada en Streamlit en el siguie
 
 - [Ver la aplicación](https://proyecto-serie-a-hxfg56cm2ccrzymvskbtem.streamlit.app/)
 
-## 🌐 Link de la app de Streamlit
+## 🌐 Link del reporte dinámico
 
 Puedes acceder al reporte dinámico realizado en R markdown en el siguiente enlace: 
 
