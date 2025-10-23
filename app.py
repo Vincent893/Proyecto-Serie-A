@@ -75,3 +75,27 @@ df_filtered = apply_filters(df, selected_teams, selected_seasons, selected_resul
 
 st.markdown(f"Mostrando: **{len(df_filtered)}** de {len(df)} partidos")
 st.markdown("___")
+
+# Grafico de goles totales y en promedio
+st.subheader("Goles por Equipo")
+
+agg_choice = st.radio("Mostrar:", options=["Totales", "En Promedio por Partido"], index=0, horizontal=True)
+if agg_choice == "Totales":
+    df_bars = df_filtered.groupby("Team", as_index=False)["GF"].sum().sort_values("GF", ascending=False)
+    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Totales por Equipo",labels={"GF": "Goles Totales", "Team": "Equipo"})
+else:
+    df_bars = df_filtered.groupby("Team", as_index=False)[["GF"]].mean().sort_values("GF", ascending=False)
+    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Promedio por Partido y Equipo", labels={"GF": "Goles Promedio por Partido", "Team": "Equipo"})
+
+fig_bars.update_layout(
+    xaxis_tickangle=-45,
+    height=450, 
+    title_x=0.4, 
+    title={'font': {'size': 26}, 'x': 0.5, 'xanchor': 'center'},
+    xaxis_title_font={'size': 18},
+    yaxis_title_font={'size': 18},
+    font=dict(size=14))
+
+st.plotly_chart(fig_bars, use_container_width=True)
+st.markdown("___")
+
