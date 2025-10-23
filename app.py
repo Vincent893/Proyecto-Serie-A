@@ -18,3 +18,29 @@ df["Venue"] = df["Venue"].replace({"Home": "Local", "Away": "Visitante"})
 df["Result"] = df["Result"].replace({"W": "Victoria", "L": "Derrota", "D": "Empate"})
 df["YearMonth"] = df["Date"].dt.to_period("M").astype(str)
 
+# Filtros en la barra lateral
+st.sidebar.header("Filtros")
+
+all_teams = sorted(df["Team"].dropna().unique())
+selected_teams = st.sidebar.multiselect("Equipos", options=all_teams, default=all_teams)
+
+all_seasons = sorted(df["Season"].dropna().unique())
+selected_seasons = st.sidebar.multiselect("Temporadas", options=all_seasons, default=all_seasons)
+
+all_results = sorted(df["Result"].dropna().unique())
+selected_results = st.sidebar.multiselect("Resultados", options=all_results, default=all_results)
+
+all_venues = sorted(df["Venue"].dropna().unique())
+selected_venues = st.sidebar.multiselect("Localía", options=all_venues, default=all_venues)
+
+min_goals = int(df["GF"].min())
+max_goals = int(df["GF"].max())
+selected_goals = st.sidebar.slider("Rango de goles", min_value=min_goals, max_value=max_goals, value=(min_goals, max_goals))
+
+min_date = df["Date"].min()
+max_date = df["Date"].max()
+selected_dates = st.sidebar.date_input("Rango de fechas", min_value=min_date, max_value=max_date, value=(min_date, max_date))
+
+# Boton para eliminar filtros
+if st.sidebar.button("Restablecer filtros"):
+    st.experimental_rerun()
