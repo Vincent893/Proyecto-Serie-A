@@ -7,7 +7,7 @@ st.set_page_config(page_title="Resumen Estadístico - Serie A",
                    layout="wide",
                    initial_sidebar_state="expanded")
 st.title("Resumen Estadístico - Serie A")
-st.subheader("Análisis interactivo de partidos basado en datos de las ultimas 5 tempoadas")
+st.subheader("Análisis interactivo de equipos basado en datos de las ultimas 5 tempoadas")
 
 df = pd.read_csv("matches_serie_A.csv")
 
@@ -73,17 +73,26 @@ def apply_filters(df: pd.DataFrame,
 
 df_filtered = apply_filters(df, selected_teams, selected_seasons, selected_results, selected_venues, selected_goals, selected_dates)
 
-st.markdown(f"Mostrando: **{len(df_filtered)}** de {len(df)} partidos")
+# Métricas clave    
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Partidos Mostrados", f"{len(df_filtered):,}")
+with col2:
+    st.metric("Goles Totales", f"{int(df_filtered['GF'].sum()):,}")
+with col3:
+    avg_goals = df_filtered["GF"].mean() if len(df_filtered) > 0 else 0
+    st.metric("Promedio goles por partido", f"{avg_goals:.2f}")
+
 st.markdown("___")
 
 # Grafico de goles totales y en promedio
 agg_choice = st.radio("Goles por Equipo:", options=["Totales", "En Promedio por Partido"], index=0, horizontal=True)
 if agg_choice == "Totales":
     df_bars = df_filtered.groupby("Team", as_index=False)["GF"].sum().sort_values("GF", ascending=False)
-    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Totales por Equipo",labels={"GF": "Goles Totales", "Team": "Equipo"})
+    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Totales",labels={"GF": "Goles Totales", "Team": "Equipo"})
 else:
     df_bars = df_filtered.groupby("Team", as_index=False)[["GF"]].mean().sort_values("GF", ascending=False)
-    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Promedio por Partido y Equipo", labels={"GF": "Goles Promedio por Partido", "Team": "Equipo"})
+    fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Promedio por Partido", labels={"GF": "Goles Promedio por Partido", "Team": "Equipo"})
 
 fig_bars.update_layout(
     xaxis_tickangle=-45,
@@ -103,7 +112,7 @@ time_teams = st.multiselect("Equipos para la Serie Temporal", options=selected_t
 timeline = df_filtered[df_filtered["Team"].isin(time_teams)]
 timeline["YearMonth"] = pd.to_datetime(timeline["YearMonth"], errors="coerce")
 df_time = timeline.groupby(["YearMonth", "Team"], as_index=False)["GF"].mean()
-fig_time = px.line(df_time, x="YearMonth", y="GF", color="Team", markers=True, title="Evolución del Promedio de Goles por Equipo", labels={"GF": "Goles Promedio", "YearMonth": "Mes"})
+fig_time = px.line(df_time, x="YearMonth", y="GF", color="Team", markers=True, title="Evolución del Promedio de Goles", labels={"GF": "Goles Promedio", "YearMonth": "Mes"})
 fig_time.update_layout(
     title_x=0.4, 
     height=450,
@@ -121,7 +130,7 @@ avg_poss = df_filtered.groupby("Team")["Poss"].mean().reset_index()
 avg_poss = avg_poss.sort_values(by="Poss", ascending=False)
 
 fig_poss = px.bar(avg_poss, x="Poss", y="Team", orientation='h', color="Poss", color_continuous_scale="Blues",
-              title="Posesión Promedio por Equipo (%)", labels={"Poss": "Posesión Promedio (%)", "Team": "Equipo"}
+              title="Posesión Promedio (%)", labels={"Poss": "Posesión Promedio (%)", "Team": "Equipo"}
 )
 
 fig_poss.update_layout(
@@ -138,7 +147,7 @@ st.plotly_chart(fig_poss, use_container_width=True)
 st.markdown("___")
 
 # Tabla resumen por equipo
-st.subheader("Tabla resumen por equipo")
+st.subheader("Tabla resumen")
 summary = (df_filtered
            .groupby("Team", as_index=True)
            .agg(Partidos=("GF", "count"),
