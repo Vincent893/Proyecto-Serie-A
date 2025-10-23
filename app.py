@@ -44,3 +44,34 @@ selected_dates = st.sidebar.date_input("Rango de fechas", min_value=min_date, ma
 # Boton para eliminar filtros
 if st.sidebar.button("Restablecer filtros"):
     st.experimental_rerun()
+
+# Aplicar filtros al dataframe
+def apply_filters(df: pd.DataFrame,
+                  teams: list[str],
+                  seasons: list,
+                  results: list[str],
+                  venues: list[str],
+                  goals_range: tuple,
+                  date_range: tuple) -> pd.DataFrame:
+    df_f = df.copy()
+    if teams:
+        df_f = df_f[df_f["Team"].isin(teams)]
+    if seasons:
+        df_f = df_f[df_f["Season"].isin(seasons)]
+    if results:
+        df_f = df_f[df_f["Result"].isin(results)]
+    if venues:
+        df_f = df_f[df_f["Venue"].isin(venues)]
+    if goals_range:
+        df_f = df_f[(df_f["GF"] >= goals_range[0]) & (df_f["GF"] <= goals_range[1])]
+
+    if date_range and len(date_range) == 2:
+        start_dt = pd.to_datetime(date_range[0])
+        end_dt = pd.to_datetime(date_range[1])
+        df_f = df_f[(df_f["Date"] >= start_dt) & (df_f["Date"] <= end_dt)]
+    return df_f
+
+df_filtered = apply_filters(df, selected_teams, selected_seasons, selected_results, selected_venues, selected_goals, selected_dates)
+
+st.markdown(f"Mostrando: **{len(df_filtered)}** de {len(df)} partidos")
+st.markdown("___")
