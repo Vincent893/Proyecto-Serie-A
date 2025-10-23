@@ -1,0 +1,10 @@
+name: "analisis-serie-a"
+output_dir: "docs" # Directorio de publicacion para Render.
+navbar:
+  title: "Analisis Serie A"
+  left:
+    - text: "Informe"
+      href: index.html
+output:
+  html_document:
+    theme: flatly # Usando el tema que especificaste en tu Rmd

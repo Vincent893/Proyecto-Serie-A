@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Vicente Diaz" />
+
+
+<title>Análisis Estadístico del Rendimiento en la Serie A: Un Estudio Basado en Posesión, Goles Esperados y Resultados Reales</title>
+
+<script src="site_libs/header-attrs-2.30/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/selectize-0.15.2/css/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="site_libs/selectize-0.15.2/js/selectize.min.js"></script>
+<script src="site_libs/selectize-0.15.2/accessibility/js/selectize-plugin-a11y.min.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#section-TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#section-TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="section-TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Analisis Serie A</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Informe</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="section-header">
+
+
+
+<h1 class="title toc-ignore">Análisis Estadístico del Rendimiento en la
+Serie A: Un Estudio Basado en Posesión, Goles Esperados y Resultados
+Reales</h1>
+<h3 class="subtitle">Evaluación de Tendencias y Correlaciones en las
+Últimas Cinco Temporadas</h3>
+<h4 class="author">Vicente Diaz</h4>
+
+</div>
+
+
+<hr />
+<div id="section-introducción" class="section level1" number="1">
+<h1><span class="header-section-number">1</span>
+<strong>Introducción</strong></h1>
+<p><font size="4"> El presente estudio examina el rendimiento de los
+equipos de la Serie A de Italia durante las últimas cinco temporadas,
+con el objetivo de comprender cómo diversos indicadores estadísticos
+(especialmente la posesión del balón, los goles esperados y la relación
+entre resultados esperados y reales) se asocian con el desempeño
+deportivo.</p>
+<p>Mediante la integración de herramientas de análisis exploratorio,
+visualizaciones gráficas y cálculos de correlación, se busca determinar
+la capacidad explicativa de las métricas avanzadas en el fútbol moderno,
+así como sus limitaciones predictivas.</p>
+<p>La investigación pretende aportar una base empírica al debate sobre
+la utilidad real de las estadísticas en un deporte marcado por la
+incertidumbre, la emoción y los factores contextuales.</font></p>
+<hr />
+<div id="section-planteamiento-del-problema" class="section level2"
+number="1.1">
+<h2><span class="header-section-number">1.1</span> <strong>Planteamiento
+del Problema</strong></h2>
+<p><font size="4"> El fútbol contemporáneo se encuentra cada vez más
+influido por la analítica y la estadística avanzada. Sin embargo, aún
+persiste la duda de cuánto pueden realmente explicar o predecir los
+datos el resultado de un partido. En particular, tres interrogantes son
+fundamentales para comprender la relación entre la teoría estadística y
+la práctica futbolística:</p>
+<ol style="list-style-type: decimal">
+<li><p>¿Una mayor posesión del balón incrementa la probabilidad de
+victoria?</p></li>
+<li><p>¿Los goles esperados reflejan con precisión el rendimiento real
+de los equipos?</p></li>
+<li><p>¿Existe una correspondencia significativa entre los resultados
+esperados y los obtenidos en el marcador?</p></li>
+</ol>
+<p>Responder a estas preguntas permite evaluar el valor predictivo de
+las métricas futbolísticas y su aplicabilidad en la toma de decisiones
+tácticas y estratégicas dentro del deporte profesional.</font></p>
+<hr />
+</div>
+<div id="section-marco-teórico" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> <strong>Marco
+Teórico</strong></h2>
+<p><font size="4"> Para sustentar el análisis, se consideran los
+siguientes conceptos clave:</p>
+<ul>
+<li><p><strong>Posesión del balón</strong>: Porcentaje de tiempo que un
+equipo controla la pelota durante un partido. Es un indicador de dominio
+táctico, aunque no necesariamente de efectividad ofensiva.</p></li>
+<li><p><strong>Diferencia de goles (DG</strong>): Resta entre goles
+anotados y recibidos. Es un indicador global de desempeño, útil para
+medir la eficiencia ofensiva y defensiva.</p></li>
+<li><p><strong>Goles Esperados</strong>: Métrica que estima la
+probabilidad de anotar en función de la calidad de las oportunidades
+generadas (posición del disparo, tipo de pase, parte del cuerpo usada,
+etc.).</p></li>
+<li><p><strong>Resultado Esperado</strong>: Resta entre goles esperados
+a favor y esperados en contra. Mide el balance entre ocasiones generadas
+y concedidas, permitiendo estimar el “resultado esperado” de un
+partido.</p></li>
+<li><p><strong>Localía</strong>: Condición de jugar como local o
+visitante.</p></li>
+<li><p><strong>Desviación y varianza</strong>: Reflejan la dispersión de
+los datos y ayudan a evaluar la consistencia o aleatoriedad de las
+métricas en cuestión.</p></li>
+<li><p><strong>Correlación</strong>: Técnica que evalúa la fuerza y
+dirección de la relación entre dos variables</font></p></li>
+</ul>
+<hr />
+</div>
+<div id="section-objetivo-general" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> <strong>Objetivo
+General</strong></h2>
+<p><font size="4"> Analizar los factores estadísticos más influyentes en
+los resultados de los equipos de la Serie A italiana durante las últimas
+cinco temporadas, evaluando la capacidad explicativa y predictiva de
+métricas como la posesión del balón y los goles esperados.</font></p>
+</div>
+<div id="section-objetivos-específicos" class="section level2"
+number="1.4">
+<h2><span class="header-section-number">1.4</span> <strong>Objetivos
+Específicos</strong></h2>
+<ol style="list-style-type: decimal">
+<li><p><font size="4"><strong>Evaluar la relación entre la posesión del
+balón y el resultado del partido</strong>, determinando si un mayor
+control del juego se asocia con una mayor probabilidad de
+victoria.</p></li>
+<li><p><strong>Analizar la confiabilidad de la métrica de goles
+esperados</strong> al momento de estimar el rendimiento ofensivo de los
+equipos y su capacidad para reflejar la eficiencia real.</p></li>
+<li><p><strong>Examinar la relación entre el resultado esperado y el
+resultado real</strong>, identificando el grado de correlación y las
+limitaciones de las métricas estadísticas como herramientas
+predictivas.</font></p></li>
+</ol>
+<hr />
+</div>
+</div>
+<div id="section-tabla-de-posiciones" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> <strong>Tabla de
+Posiciones</strong></h1>
+<p><font size="4"> Antes de abordar las métricas avanzadas, se presenta
+la <strong>tabla de posiciones consolidada de la Serie A</strong>,
+correspondiente a las últimas cinco temporadas. Esta tabla constituye la
+<strong>referencia central del estudio</strong>, ya que refleja el
+rendimiento real de los equipos y permite contrastarlo con los
+indicadores estadísticos analizados posteriormente, tales como la
+posesión promedio y los goles esperados.</p>
+<p>La observación de esta clasificación <strong>facilita identificar
+patrones</strong> de consistencia o discrepancia entre los resultados
+obtenidos y las métricas de desempeño, contribuyendo directamente al
+objetivo general del estudio de analizar la relación entre rendimiento
+real y variables estadísticas avanzadas.</font></p>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="equipo-label" for="equipo">Selecciona un Equipo:</label>
+<div>
+<select id="equipo" class="shiny-input-select"><option value="Todos los equipos" selected>Todos los equipos</option>
+<option value="Napoli">Napoli</option>
+<option value="Internazionale">Internazionale</option>
+<option value="Atalanta">Atalanta</option>
+<option value="Juventus">Juventus</option>
+<option value="Roma">Roma</option>
+<option value="Fiorentina">Fiorentina</option>
+<option value="Lazio">Lazio</option>
+<option value="Milan">Milan</option>
+<option value="Bologna">Bologna</option>
+<option value="Como">Como</option>
+<option value="Torino">Torino</option>
+<option value="Udinese">Udinese</option>
+<option value="Genoa">Genoa</option>
+<option value="Hellas Verona">Hellas Verona</option>
+<option value="Cagliari">Cagliari</option>
+<option value="Parma">Parma</option>
+<option value="Lecce">Lecce</option>
+<option value="Empoli">Empoli</option>
+<option value="Venezia">Venezia</option>
+<option value="Monza">Monza</option>
+<option value="Frosinone">Frosinone</option>
+<option value="Sassuolo">Sassuolo</option>
+<option value="Salernitana">Salernitana</option>
+<option value="Spezia">Spezia</option>
+<option value="Cremonese">Cremonese</option>
+<option value="Sampdoria">Sampdoria</option>
+<option value="Benevento">Benevento</option>
+<option value="Crotone">Crotone</option></select>
+<script type="application/json" data-for="equipo" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+<div class="form-group shiny-input-container">
+<label class="control-label" id="temporada-label" for="temporada">Selecciona una Temporada:</label>
+<div>
+<select id="temporada" class="shiny-input-select"><option value="Todas las temporadas" selected>Todas las temporadas</option>
+<option value="2024/2025">2024/2025</option>
+<option value="2023/2024">2023/2024</option>
+<option value="2022/2023">2022/2023</option>
+<option value="2021/2022">2021/2022</option>
+<option value="2020/2021">2020/2021</option></select>
+<script type="application/json" data-for="temporada" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
+</div>
+</div>
+<div class="datatables html-widget html-widget-output shiny-report-size html-fill-item" id="out4a9772274c615bb7" style="width:100%;height:auto;"></div>
+<hr />
+</div>
+<div
+id="section-está-el-resultado-del-partido-relacionado-a-la-posesión-del-balon"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> <strong>¿Está el
+Resultado del Partido relacionado a la Posesión del Balon?</strong></h1>
+<p><font size="4"> A partir de la distribución de rendimiento observada
+en la tabla de posiciones, se procede a examinar si las diferencias en
+la posesión promedio del balón guardan relación con el éxito
+competitivo.</p>
+<p>Este análisis permitirá identificar si la tenencia del balón
+(frecuentemente asociada con el dominio del juego) se traduce
+efectivamente en mejores resultados en la clasificación
+general.</font></p>
+<div id="section-visualización" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span>
+<strong>Visualización</strong></h2>
+<p><font size="4"> Se evalua mediante un <strong>gráfico de caja y
+bigote</strong>, junto con un <strong>gráfico de fluctuación</strong>.
+El gráfico de caja y bigote nos ayuda a visualizar donde se encuentra la
+<strong>mediana</strong> de los datos, asi como que tan
+<strong>dispersos</strong> estan los datos según este indicador.
+Mientras que el gráfico de fluctuación muestra el <strong>total</strong>
+de partidos en cada categoría, <strong>revelando patrones</strong> que
+las cajas solas no detectan, y, a su vez, identificando <strong>casos
+extremos</strong> con mayor claridad. Estas herramientas visuales se
+complementan entre si, haciendo que podamos observar la <strong>historia
+completa</strong> de cada partido</font></p>
+<div class="shiny-plot-output html-fill-item" id="out51b6a4ff26c0ef94" style="width:100%;height:400px;"></div>
+<p><font size="4"> <strong>En vista genera</strong>l, podemos observar
+que la mayoria de partidos suelen terminar con porcentajes de posesion
+cercanos al 50%, independientemente del resultado del juego</p>
+<p>Los equipos <strong>locales</strong> presentan medianas de posesion
+mas altas en general, lo que quiere decir que tienden a
+<strong>controlar y dominar</strong> mas el balon.</p>
+<p>Los equipos <strong>visitantes</strong> suelen terminar con
+<strong>menor posesion</strong>, aunque son mas <strong>precisos y
+eficaces</strong> a la hora de transicionar, de <strong>recuperar
+balones y contratacar</strong>, haciendo que ganen partidos que
+<strong>estadisticamente</strong> no deberian ganar</font></p>
+</div>
+<div id="section-conclusiones" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span>
+<strong>Conclusiones</strong></h2>
+<p><font size="4"> El análisis demuestra que el fútbol moderno
+<strong>premia</strong> la <strong>eficiencia</strong> sobre la
+posesión, especialmente para equipos visitantes. La condición de
+local/visitante es un <strong>factor crucial</strong> que modifica
+completamente la relación entre posesión y resultados.</p>
+<p>Basicamente, podemos concluir que la posesión <strong>no es un factor
+determinante para ganar</strong>. Equipos con menor posesión pueden
+ganar partidos mediante contraataques eficientes y/o tácticas defensivas
+eficaces, mientras que altos porcentajes de posesión no siempre se
+traducen en victorias. Esto refleja la naturaleza estratégica del fútbol
+moderno, donde la eficacia en las transiciones defensivas y ofensivas es
+clave.</font></p>
+<hr />
+</div>
+</div>
+<div
+id="section-es-la-métrica-de-goles-esperados-confiable-al-momento-de-analizar-el-rendimiento-de-un-equipo"
+class="section level1" number="4">
+<h1><span class="header-section-number">4</span> <strong>¿Es la métrica
+de Goles Esperados confiable al momento de analizar el Rendimiento de un
+Equipo?</strong></h1>
+<p><font size="4"> La métrica de <strong>Goles Esperados</strong> se ha
+convertido en una herramienta fundamental para evaluar la eficiencia
+ofensiva en el fútbol moderno. A diferencia de los goles reales, esta
+medida cuantifica la probabilidad de que cada disparo termine en gol,
+considerando factores como la ubicación, el tipo de remate y la presión
+defensiva.</p>
+<p>En este contexto, surge la pregunta: ¿es el xG una métrica confiable
+al momento de <strong>analizar el rendimiento general de un
+equipo</strong>?</p>
+<p>Responder a esta cuestión permite determinar si los equipos están
+aprovechando sus oportunidades de forma efectiva o si, por el contrario,
+muestran un rendimiento inferior al que sus datos de creación de
+ocasiones sugieren.</font></p>
+<div id="section-visualización-1" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span>
+<strong>Visualización</strong></h2>
+<p><font size="4"> Para abordar este análisis, se utiliza un
+<strong>gráfico de barras comparativo</strong> que muestra la diferencia
+entre los <strong>goles anotados</strong> y los <strong>goles
+esperados</strong> por equipo.</p>
+<p>Este tipo de visualización es especialmente útil porque permite
+observar de forma inmediata el <strong>grado de eficiencia o
+ineficiencia</strong> de cada conjunto. Además, la división cromática
+entre equipos con rendimiento superior al esperado y equipos con
+rendimiento rendimiento inferior al esperado aporta una interpretación
+visual intuitiva.</font></p>
+<div class="shiny-plot-output html-fill-item" id="outa43abd54385cfedb" style="width:100%;height:400px;"></div>
+<p><font size="4"> Al analizar el gráfico, se observa que algunos
+equipos, como <strong>Inter</strong> y <strong>Napoli</strong>,
+presentan una diferencia positiva significativa, lo que refleja una alta
+eficacia ofensiva: logran convertir más goles de los que sus
+oportunidades sugerirían. En contraste, equipos como
+<strong>Juventus</strong> o <strong>Roma</strong> muestran valores
+negativos, evidenciando una tendencia a desaprovechar ocasiones claras.
+Este comportamiento podría explicarse por factores como la
+<strong>calidad individual de los delanteros</strong>, la
+<strong>precisión en la toma de decisiones en el área rival</strong>, o
+incluso la <strong>capacidad del portero contrario</strong> para evitar
+goles en situaciones de alta probabilidad.</font></p>
+</div>
+<div id="section-conclusiones-1" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span>
+<strong>Conclusiones</strong></h2>
+<p><font size="4"> En conclusión, la comparación entre <strong>goles
+esperados y goles reales</strong> demuestra que esta medida es una
+métrica <strong>fiable para evaluar el rendimiento y la eficiencia
+ofensiva</strong>, pero no suficiente por sí sola para explicar el éxito
+competitivo de un equipo.</p>
+<p>Su mayor valor radica en ofrecer una medida objetiva de la calidad de
+las oportunidades generadas, permitiendo detectar tanto casos de
+sobre-rendimiento como de sub-rendimiento. Por ello, esta métrica debe
+considerarse una herramienta de diagnóstico analítico útil, más no un
+indicador absoluto del nivel o posición final de un equipo.</font></p>
+<hr />
+</div>
+</div>
+<div
+id="section-existe-relación-entre-el-resultado-esperado-y-el-resultado-real"
+class="section level1" number="5">
+<h1><span class="header-section-number">5</span> <strong>¿Existe
+Relación entre el Resultado Esperado y el Resultado Real?</strong></h1>
+<p><font size= "4"> Con esta pregunta, se busca determinar hasta que
+punto las <strong>métricas estadísticas</strong> logran <strong>reflejar
+el desenlace</strong> de los partidos.</p>
+<p>En otrasa palabras, se intenta medir si los equipos que, segun los
+datos, generan mas y mejores oportunidades son realmente los que
+terminan por encima en el marcador</p>
+<div id="section-visualización-2" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span>
+<strong>Visualización</strong></h2>
+<p><font size="4"> Se analiza mediante un <strong>gráfico de
+puntos</strong>, debido a su efectividad al momento de identificar el
+tipo de relación entre dos variables continuas (si es lineal, no lineal
+o no existe), asi como su capacidad para revelar patrones de tendencia y
+su característica de mostrar la heterogeneidad real del
+fenómeno</font></p>
+<div class="shiny-plot-output html-fill-item" id="out569f1db62781339d" style="width:100%;height:400px;"></div>
+<p><font size="4"> Este gráfico revela una <strong>correlación
+moderadamente positiva</strong> entre el resultado esperado y el
+resultado real, con un coeficiente de correlación estimado entre
+0.5-0.7. Sin embargo, lo más significativo es la <strong>alta dispersión
+residual</strong> alrededor de la línea de tendencia, indicando que el
+“Resultado Esperado” explica solamente entre 25 y 49% de la varianza en
+los resultados reales.</p>
+<p>Estadísticamente, observamos que aproximadamente el 40% de los
+partidos muestran <strong>desviaciones mayores</strong> a ±1.5 goles
+entre lo esperado y lo real, una <strong>desviación
+significativa</strong>, demostrando las <strong>limitaciones</strong>
+del modelo para <strong>predecir</strong> resultados
+específicos.</font></p>
+</div>
+<div id="section-conclusiones-2" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span>
+<strong>Conclusiones</strong></h2>
+<p><font size="4"> Al observar el grupo de partidos con resultado
+esperado negativo que terminaron con diferencia positiva de goles (es
+decir, merecian perder, pero ganaron), podemos ver que representan entre
+el 15% y el 20% de la muestra, evidenciando así que factores no
+capturados por la métrica, como lo pueden ser eficiencia de
+finalización, factores psicológicos o momentos de genialidad individual,
+impactan significativamente los resultados.</p>
+<p>En conclusión, El Resultado Esperado es un indicador direccional
+<strong>útil pero imperfecto</strong>, ya que explica aproximadamente la
+mitad de la varianza en los resultados, pero falla consistentemente en
+predecir resultados específicos debido a algunos factores no medibles,
+como los mencionados anteriormente.</p>
+<p>Esta métrica debe interpretarse como herramienta de análisis de
+rendimiento, mas no de predicción absoluta.</font></p>
+<hr />
+</div>
+</div>
+<div id="section-conclusión-final" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> <strong>Conclusión
+Final</strong></h1>
+<p><font size="4"> El estudio confirma que, si bien las métricas
+estadísticas aportan una comprensión valiosa del rendimiento
+futbolístico, su capacidad predictiva es limitada.</p>
+<ul>
+<li><p>En el caso de la <strong>posesión del balón</strong>, se observa
+una tendencia a un mayor control por parte de los equipos locales, pero
+sin una correlación directa con el resultado final.</p></li>
+<li><p>Los <strong>goles esperados</strong> resultan ser un indicador
+útil de rendimiento, pero no infalible: algunos equipos sobrepasan sus
+expectativas (eficientes) mientras que otros rinden por debajo de lo
+previsto (ineficientes).</p></li>
+<li><p>La relación entre <strong>resultado esperado y real</strong>
+presenta una correlación moderada (0.5–0.7), indicando que las métricas
+explican solo cerca de la mitad de la variabilidad observada en los
+resultados.</p></li>
+</ul>
+<p>El futbol es un deporte de <strong>momentos efímeros</strong>, de
+jugadas fugaces. Un deporte que, en la mayoria de casos, se
+<strong>resiste a las predicciones</strong>. A fin de cuentas, esos
+artistas del campo, que utilizan el balón como su pincel y la cancha
+como su lienzo, al llegar el momento de actuar, suelen comportarse de
+tal manera que resulta <strong>imposible</strong> de medir, estimar y,
+mucho menos, <strong>predecir</strong>.</p>
+<p>La estadística en el futbol, mas que predecir,
+<strong>interpreta</strong>: traduce el juego en números sin perder de
+vista su esencia imprevisible y artística</font></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("section-TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#section-TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
