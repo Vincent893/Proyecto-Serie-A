@@ -77,9 +77,7 @@ st.markdown(f"Mostrando: **{len(df_filtered)}** de {len(df)} partidos")
 st.markdown("___")
 
 # Grafico de goles totales y en promedio
-st.subheader("Goles por Equipo")
-
-agg_choice = st.radio("Mostrar:", options=["Totales", "En Promedio por Partido"], index=0, horizontal=True)
+agg_choice = st.radio("Goles por Equipo:", options=["Totales", "En Promedio por Partido"], index=0, horizontal=True)
 if agg_choice == "Totales":
     df_bars = df_filtered.groupby("Team", as_index=False)["GF"].sum().sort_values("GF", ascending=False)
     fig_bars = px.bar(df_bars, x="Team", y="GF", title="Goles Totales por Equipo",labels={"GF": "Goles Totales", "Team": "Equipo"})
@@ -100,8 +98,6 @@ st.plotly_chart(fig_bars, use_container_width=True)
 st.markdown("___")
 
 # Linea de tiempo del promedio de goles por mes
-st.subheader("Evolución temporal del promedio de goles por equipo")
-
 time_teams = st.multiselect("Equipos para la Serie Temporal", options=selected_teams, default=selected_teams[:3])
 
 timeline = df_filtered[df_filtered["Team"].isin(time_teams)]
@@ -120,6 +116,27 @@ st.plotly_chart(fig_time, use_container_width=True)
 
 st.markdown("___")
 
+# Gráfico de barras de posesion promedio
+avg_poss = df_filtered.groupby("Team")["Poss"].mean().reset_index()
+avg_poss = avg_poss.sort_values(by="Poss", ascending=False)
+
+fig_poss = px.bar(avg_poss, x="Poss", y="Team", orientation='h', color="Poss", color_continuous_scale="Blues",
+              title="Posesión Promedio por Equipo (%)", labels={"Poss": "Posesión Promedio (%)", "Team": "Equipo"}
+)
+
+fig_poss.update_layout(
+    height=450, 
+    title_x=0.4, 
+    title={'font': {'size': 26}, 'x': 0.5, 'xanchor': 'center'},
+    xaxis_title_font={'size': 18},
+    yaxis_title_font={'size': 18},
+    font=dict(size=14),
+    coloraxis_colorbar=dict(title="Posesión (%)")
+)
+st.plotly_chart(fig_poss, use_container_width=True)
+
+st.markdown("___")
+
 # Tabla resumen por equipo
 st.subheader("Tabla resumen por equipo")
 summary = (df_filtered
@@ -133,5 +150,3 @@ summary = (df_filtered
            .sort_values("Total_Goles", ascending=False)
            .reset_index())
 st.dataframe(summary)
-
-st.markdown("___")
