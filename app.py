@@ -117,3 +117,21 @@ fig_time.update_layout(
     font=dict(size=14))
 
 st.plotly_chart(fig_time, use_container_width=True)
+
+st.markdown("___")
+
+# Tabla resumen por equipo
+st.subheader("Tabla resumen por equipo")
+summary = (df_filtered
+           .groupby("Team", as_index=True)
+           .agg(Partidos=("GF", "count"),
+                Total_Goles =("GF", "sum"),
+                Goles_Promedio=("GF", "mean"),
+                Victorias=("Result", lambda x: (x == "Victoria").sum()),
+                Empates=("Result", lambda x: (x == "Empate").sum()),
+                Derrotas=("Result", lambda x: (x == "Derrota").sum()))
+           .sort_values("Total_Goles", ascending=False)
+           .reset_index())
+st.dataframe(summary)
+
+st.markdown("___")
